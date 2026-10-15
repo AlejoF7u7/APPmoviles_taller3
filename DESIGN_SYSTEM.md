@@ -37,6 +37,8 @@ En Android el blur de `expo-blur` es solo una aproximación; en iOS 26+ existe e
 - **Botones principales:** `LinearGradient` primary → secondary con `start={{x:0,y:0}} end={{x:1,y:1}}`. Ver el FAB en `index.tsx`.
 - **Modal bottom sheet:** copiar la estructura de `AddExpenseModal.tsx` (backdrop con blur, `SlideInDown`, handle, `ScrollView`).
 - **Inputs:** fondo `rgba(255,255,255,0.5)`, `borderWidth: 1`, `glassBorder`, `borderRadius: Spacing.two`.
+- **Fecha y comprobantes:** presentar el selector de fecha con el mismo fondo y borde de los inputs; usar botones translúcidos para abrir cámara o galería y una vista previa redondeada para la imagen adjunta.
+- **Acciones y orden:** usar chips con `primary` para el orden seleccionado y acciones compactas en las tarjetas, manteniendo el contraste y espaciado del tema.
 
 ## Teclado (importante)
 

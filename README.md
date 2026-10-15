@@ -7,8 +7,9 @@ Una aplicación móvil moderna para Android desarrollada con **Expo (React Nativ
 ![TypeScript](https://img.shields.io/badge/typescript-6.0.3-blue.svg)
 ![React Native](https://img.shields.io/badge/react--native-0.86.3-blue.svg)
 
->  **Este proyecto es la base para un taller progresivo de desarrollo móvil**. 
-Los alumnos comenzarán con esta versión base (sin persistencia de datos) y avanzarán implementando AsyncStorage, SQLite 
+> **Este proyecto es la base para un taller progresivo de desarrollo móvil.** La app permite registrar, editar y eliminar gastos en USD; adjuntar comprobantes; y consultar y ordenar los gastos del mes actual. Los registros se guardan localmente en el dispositivo.
+
+El alcance funcional actual se describe en [CONTEXTO_APP.md](./CONTEXTO_APP.md).
 ---
 ##  Instalación y Configuración
 

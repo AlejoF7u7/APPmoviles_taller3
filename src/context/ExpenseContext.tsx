@@ -1,7 +1,12 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Expense } from '@/types/expense';
+import { Expense, ExpenseSortOrder } from '@/types/expense';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getAllExpenses, insertExpense } from '@/database/expenseRepository';
+import {
+  deleteExpense as deleteExpenseFromDatabase,
+  getAllExpenses,
+  insertExpense,
+  updateExpense as updateExpenseInDatabase,
+} from '@/database/expenseRepository';
  
 interface ExpenseContextType {
   expenses: Expense[];
@@ -9,8 +14,10 @@ interface ExpenseContextType {
   isLoading: boolean;
   // Ahora devuelve una Promise porque guardar en el telefono es asincrono
   addExpense: (expense: Omit<Expense, 'id'>) => Promise<void>;
+  updateExpense: (expense: Expense) => Promise<void>;
+  deleteExpense: (id: string) => Promise<void>;
   getMonthlyTotal: () => number;
-  getCurrentMonthExpenses: () => Expense[];
+  getCurrentMonthExpenses: (sortOrder?: ExpenseSortOrder) => Expense[];
 }
  
 // Arranca en undefined para poder avisar si alguien usa el hook sin Provider
@@ -58,19 +65,37 @@ export const ExpenseProvider: React.FC<{ children: ReactNode }> = ({ children })
     // Va al principio para que el ultimo gasto salga arriba
     setExpenses((prev) => [newExpense, ...prev]);
   };
- 
-  const getCurrentMonthExpenses = () => {
+
+  const updateExpense = async (expense: Expense) => {
+    await updateExpenseInDatabase(db, expense);
+    setExpenses((prev) =>
+      prev.map((current) => (current.id === expense.id ? expense : current))
+    );
+  };
+
+  const deleteExpense = async (id: string) => {
+    await deleteExpenseFromDatabase(db, id);
+    setExpenses((prev) => prev.filter((expense) => expense.id !== id));
+  };
+
+  const getCurrentMonthExpenses = (sortOrder: ExpenseSortOrder = 'date') => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
- 
-    return expenses.filter((expense) => {
-      const expenseDate = new Date(expense.date);
-      return (
-        expenseDate.getMonth() === currentMonth &&
-        expenseDate.getFullYear() === currentYear
+
+    return expenses
+      .filter((expense) => {
+        const expenseDate = new Date(expense.date);
+        return (
+          expenseDate.getMonth() === currentMonth &&
+          expenseDate.getFullYear() === currentYear
+        );
+      })
+      .sort((left, right) =>
+        sortOrder === 'amount'
+          ? right.amount - left.amount || right.date.getTime() - left.date.getTime()
+          : right.date.getTime() - left.date.getTime()
       );
-    });
   };
  
   const getMonthlyTotal = () => {
@@ -86,6 +111,8 @@ export const ExpenseProvider: React.FC<{ children: ReactNode }> = ({ children })
         expenses,
         isLoading,
         addExpense,
+        updateExpense,
+        deleteExpense,
         getMonthlyTotal,
         getCurrentMonthExpenses,
       }}
